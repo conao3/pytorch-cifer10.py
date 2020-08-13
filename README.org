@@ -24,7 +24,11 @@ cifer10 classifier using PyTorch.
 * Install
 
 * Usage
-
+#+begin_src sh
+  pip3 install torch torchvision numpy matplotlib
+  pip3 install segmentation-models-pytorch
+  pip3 install rope jedi flake8 autopep8 yapf black
+#+end_src
 * Information
 ** Community
 All feedback and suggestions are welcome!
