@@ -5,8 +5,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
 transform = transforms.Compose(
     [transforms.ToTensor(),
      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
@@ -43,18 +41,18 @@ class Net(nn.Module):
         return x
 
 
-# net = Net().cuda()
-net = Net()
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+net = Net().to(device)
 
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
-for epoch in range(2):  # loop over the dataset multiple times
+for epoch in range(5):  # loop over the dataset multiple times
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
-        # get the inputs; data is a list of [inputs, labels]
         inputs, labels = data
-        # inputs, lavels = inputs.cuda(), labels.cuda()
+        inputs, labels = inputs.to(device), labels.to(device)
 
         # zero the parameter gradients
         optimizer.zero_grad()
@@ -74,24 +72,18 @@ for epoch in range(2):  # loop over the dataset multiple times
 
 print('Finished Training')
 
-PATH = './cifar_net.pth'
-torch.save(net.state_dict(), PATH)
+# PATH = './cifar_net.pth'
+# torch.save(net.state_dict(), PATH)
 
-dataiter = iter(testloader)
-images, labels = dataiter.next()
-
-net = Net()
-net.load_state_dict(torch.load(PATH))
-
-outputs = net(images)
-
-_, predicted = torch.max(outputs, 1)
+# net = Net()
+# net.load_state_dict(torch.load(PATH))
 
 total = 0
 correct = 0
 with torch.no_grad():
     for data in testloader:
         images, labels = data
+        images, labels = images.to(device), labels.to(device)
         outputs = net(images)
         _, predicted = torch.max(outputs.data, 1)
         total += labels.size(0)
@@ -100,11 +92,12 @@ with torch.no_grad():
 print('Accuracy of the network on the 10000 test images: %d %%' %
       (100 * correct / total))
 
-class_correct = list(0. for i in range(10))
-class_total = list(0. for i in range(10))
+class_correct = list(0.0 for i in range(10))
+class_total = list(0.0 for i in range(10))
 with torch.no_grad():
     for data in testloader:
         images, labels = data
+        images, labels = images.to(device), labels.to(device)
         outputs = net(images)
         _, predicted = torch.max(outputs, 1)
         c = (predicted == labels).squeeze()
