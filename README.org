@@ -28,6 +28,7 @@ cifer10 classifier using PyTorch.
   pip3 install torch torchvision numpy matplotlib
   pip3 install segmentation-models-pytorch
   pip3 install rope jedi flake8 autopep8 yapf black
+  pip3 install tensorboard
 #+end_src
 * Information
 ** Community
